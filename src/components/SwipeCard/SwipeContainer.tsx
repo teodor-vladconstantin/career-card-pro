@@ -21,12 +21,6 @@ export const SwipeContainer = ({ jobs, onSwipe, onLoadMore }: SwipeContainerProp
 
   const currentJob = jobs[currentIndex];
 
-  useEffect(() => {
-    // Load more when getting close to the end
-    if (currentIndex >= jobs.length - 3 && onLoadMore) {
-      onLoadMore();
-    }
-  }, [currentIndex, jobs.length, onLoadMore]);
 
   const handleDragEnd = (event: any, info: PanInfo) => {
     if (Math.abs(info.offset.x) > 100) {

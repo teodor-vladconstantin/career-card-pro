@@ -35,7 +35,7 @@ const TalentDashboard = () => {
     if (userId) {
       fetchJobs();
     }
-  }, [userId, filters]);
+  }, [userId]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -239,7 +239,15 @@ const TalentDashboard = () => {
               </div>
 
               <div className="md:col-span-2">
-                <Button onClick={fetchJobs} className="w-full gradient-primary">
+                <Button 
+                  onClick={() => {
+                    setLoading(true);
+                    fetchJobs();
+                  }} 
+                  className="w-full gradient-primary"
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Apply Filters
                 </Button>
               </div>
