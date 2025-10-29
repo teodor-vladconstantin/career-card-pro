@@ -8,7 +8,9 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import TalentDashboard from "./pages/talent/TalentDashboard";
 import TalentProfile from "./pages/talent/TalentProfile";
+import AppliedJobs from "./pages/talent/AppliedJobs";
 import CompanyDashboard from "./pages/company/CompanyDashboard";
+import CompanyProfile from "./pages/company/CompanyProfile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotificationsPage from "./pages/NotificationsPage";
 import NotFound from "./pages/NotFound";
@@ -27,8 +29,10 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/talent/dashboard" element={<TalentDashboard />} />
           <Route path="/talent/profile" element={<TalentProfile />} />
+          <Route path="/talent/applied" element={<AppliedJobs />} />
           <Route path="/talent/notifications" element={<NotificationsPage />} />
           <Route path="/company/dashboard" element={<CompanyDashboard />} />
+          <Route path="/company/profile" element={<CompanyProfile />} />
           <Route path="/company/notifications" element={<NotificationsPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/notifications" element={<NotificationsPage />} />

@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 const TalentProfile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [userId, setUserId] = useState<string>('');
   const [profile, setProfile] = useState<Partial<Profile>>({
     full_name: '',
@@ -23,6 +24,7 @@ const TalentProfile = () => {
     experience_years: 0,
     education: '',
     location: '',
+    cv_url: '',
     linkedin_url: '',
     github_url: '',
     portfolio_url: '',
@@ -53,7 +55,7 @@ const TalentProfile = () => {
         .eq('id', id)
         .single();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') throw error;
       if (data) setProfile(data);
     } catch (error: any) {
       toast({
@@ -66,7 +68,62 @@ const TalentProfile = () => {
     }
   };
 
+  const handleUploadCV = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'File size must be less than 5MB',
+      });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const filePath = `${userId}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('cvs')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('cvs')
+        .getPublicUrl(filePath);
+
+      setProfile({ ...profile, cv_url: publicUrl });
+
+      toast({
+        title: 'Success!',
+        description: 'CV uploaded successfully',
+      });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Failed to upload CV',
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async () => {
+    if (!profile.full_name) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Full name is required',
+      });
+      return;
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase
@@ -78,6 +135,7 @@ const TalentProfile = () => {
           experience_years: profile.experience_years,
           education: profile.education,
           location: profile.location,
+          cv_url: profile.cv_url,
           linkedin_url: profile.linkedin_url,
           github_url: profile.github_url,
           portfolio_url: profile.portfolio_url,
@@ -260,6 +318,51 @@ const TalentProfile = () => {
                   placeholder="https://yourportfolio.com"
                 />
               </div>
+            </div>
+
+            {/* CV Upload */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">CV / Resume</h3>
+              
+              <div className="flex items-center gap-4">
+                <Input
+                  id="cv_upload"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleUploadCV}
+                  className="hidden"
+                />
+                <Label htmlFor="cv_upload" className="cursor-pointer">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={uploading}
+                    asChild
+                  >
+                    <span>
+                      {uploading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="mr-2 h-4 w-4" />
+                      )}
+                      Upload CV
+                    </span>
+                  </Button>
+                </Label>
+                {profile.cv_url && (
+                  <a
+                    href={profile.cv_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline"
+                  >
+                    View current CV
+                  </a>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Accepted formats: PDF, DOC, DOCX (Max 5MB)
+              </p>
             </div>
 
             <div className="pt-4 flex gap-4">

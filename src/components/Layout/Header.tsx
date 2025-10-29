@@ -57,7 +57,23 @@ export const Header = ({ isAuthenticated, userRole, notificationCount = 0 }: Hea
               </Link>
               
               {userRole === 'talent' && (
-                <Link to="/talent/profile">
+                <>
+                  <Link to="/talent/applied">
+                    <Button variant="ghost" size="sm">
+                      Applications
+                    </Button>
+                  </Link>
+                  <Link to="/talent/profile">
+                    <Button variant="ghost" size="sm">
+                      <User className="h-4 w-4 mr-2" />
+                      Profile
+                    </Button>
+                  </Link>
+                </>
+              )}
+
+              {userRole === 'company' && (
+                <Link to="/company/profile">
                   <Button variant="ghost" size="sm">
                     <User className="h-4 w-4 mr-2" />
                     Profile
