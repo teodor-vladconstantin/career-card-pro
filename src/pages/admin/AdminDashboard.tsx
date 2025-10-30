@@ -4,10 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Layout/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Users, Briefcase, FileCheck, TrendingUp } from 'lucide-react';
+import { Loader2, Users, Briefcase, FileCheck, TrendingUp, RefreshCw } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SeedDataButton } from '@/components/admin/SeedDataButton';
+import { ClearDataButton } from '@/components/admin/ClearDataButton';
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -129,10 +131,26 @@ const AdminDashboard = () => {
       
       <div className="container py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground text-lg">
-            God Mode - Full system overview and control
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
+              <p className="text-muted-foreground text-lg">
+                God Mode - Full system overview and control
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                onClick={fetchAllData}
+                className="shadow-card"
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+              <SeedDataButton onComplete={fetchAllData} />
+              <ClearDataButton onComplete={fetchAllData} />
+            </div>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -202,8 +220,15 @@ const AdminDashboard = () => {
                 <CardDescription>View and manage talent profiles</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {talents.map((talent) => (
+                {talents.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">No talents yet</p>
+                    <p className="text-sm">Talents will appear here once they sign up</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {talents.map((talent) => (
                     <div
                       key={talent.id}
                       className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -226,7 +251,8 @@ const AdminDashboard = () => {
                       </Button>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -238,8 +264,15 @@ const AdminDashboard = () => {
                 <CardDescription>View and manage company accounts</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {companies.map((company) => (
+                {companies.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">No companies yet</p>
+                    <p className="text-sm">Use "Seed Demo Data" to create test companies</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {companies.map((company) => (
                     <div
                       key={company.id}
                       className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -255,7 +288,8 @@ const AdminDashboard = () => {
                       </Button>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -267,8 +301,15 @@ const AdminDashboard = () => {
                 <CardDescription>View and manage all job postings</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {jobs.map((job) => (
+                {jobs.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">No jobs posted yet</p>
+                    <p className="text-sm">Use "Seed Demo Data" to create test jobs</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {jobs.map((job) => (
                     <div
                       key={job.id}
                       className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -289,7 +330,8 @@ const AdminDashboard = () => {
                       </Button>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -301,8 +343,15 @@ const AdminDashboard = () => {
                 <CardDescription>View and manage all job applications</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {applications.map((app) => (
+                {applications.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <FileCheck className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">No applications yet</p>
+                    <p className="text-sm">Applications will appear here once talents start swiping</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {applications.map((app) => (
                     <div
                       key={app.id}
                       className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -329,7 +378,8 @@ const AdminDashboard = () => {
                       </Button>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
